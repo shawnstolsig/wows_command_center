@@ -1,26 +1,42 @@
+// library imports
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch
+} from 'react-router-dom'
+import { connect } from 'react-redux'
 
-function App() {
+// project imports
+import Loading from './components/Loading'
+import Nav from './components/Nav'
+import { handleAutoLogin } from './actions/authedUser'
+const Home = React.lazy(() => import('./components/Home'))
+const Login = React.lazy(() => import('./components/Login'))
+const LoginCallback = React.lazy(() => import('./components/LoginCallback'))
+
+function App({dispatch}) {
+
+  // check for autoLogin on initial render
+  React.useEffect(() => {
+    dispatch(handleAutoLogin())
+  },[dispatch])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+
+      <Nav />
+
+      <React.Suspense fallback={<Loading />}>
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route path='/login' component={Login} />
+          <Route path='/complete_login' component={LoginCallback} />
+          <Route render={() => <h1>404: Not found.</h1>} />
+        </Switch>
+      </React.Suspense>
+    </Router>
   );
 }
 
-export default App;
+export default connect()(App);
