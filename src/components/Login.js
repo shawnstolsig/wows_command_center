@@ -53,7 +53,7 @@ export default function Login({ location }) {
     <Container className={classes.container}>
       <Typography variant="h6" align="center">Please select your region to login with WG credentials.</Typography>
       <Box align="center">
-        <img src={wgLogo} className={classes.wgLogo}/>
+        <img src={wgLogo} className={classes.wgLogo} alt=''/>
       </Box>
       <Grid container spacing={2} align="center">
         <Grid item xs={12}>

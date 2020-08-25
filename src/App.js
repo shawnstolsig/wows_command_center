@@ -6,9 +6,6 @@ import {
   Switch
 } from 'react-router-dom'
 import { connect } from 'react-redux'
-import {
-  Container
-} from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 
 // project imports
@@ -46,18 +43,14 @@ function App({ dispatch }) {
       <Nav />
       <div className={classes.toolbar} />
 
-      {/* <Container> */}
-        <React.Suspense fallback={<Loading />}>
-          <Switch>
-            <Route exact path='/' component={Home} />
-            <Route path='/login' component={Login} />
-            <Route path='/complete_login' component={LoginCallback} />
-            <Route render={() => <h1>404: Not found.</h1>} />
-          </Switch>
-        </React.Suspense>
-      {/* </Container> */}
-
-
+      <React.Suspense fallback={<Loading />}>
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route path='/login' component={Login} />
+          <Route path='/complete_login' component={LoginCallback} />
+          <Route render={() => <h1>404: Not found.</h1>} />
+        </Switch>
+      </React.Suspense>
     </Router>
   );
 }

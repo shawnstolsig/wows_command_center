@@ -7,6 +7,10 @@ verify_ssl = true
 
 [packages]
 django = "*"
+djangorestframework = "*"
+whitenoise = "*"
+django-cors-headers = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.8"
