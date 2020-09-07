@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     # Custom apps
     'api.apps.ApiConfig',
+    'openid.apps.OpenIDConfig',
 ]
 
 MIDDLEWARE = [

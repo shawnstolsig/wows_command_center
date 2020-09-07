@@ -9,7 +9,7 @@ from . import views
 # urlpatterns = router.urls
 
 # for testing/setup:
-from django.urls import include, path
+from django.urls import path
 urlpatterns = [
     path('', views.test_json)
 ]

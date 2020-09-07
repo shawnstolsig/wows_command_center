@@ -36,7 +36,7 @@ export default function Login({ location }) {
     const appID = process.env.REACT_APP_WOWS_APP_ID
 
     // specify where WG should send the user back to
-    const redirectURL = `http://localhost:3000/complete_login`
+    const redirectURL = `http://localhost:8000/openid`
 
     // get the domain based on the region
     let domain
