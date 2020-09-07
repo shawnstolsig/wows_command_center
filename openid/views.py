@@ -18,6 +18,17 @@ from .exceptions import OpenIDVerificationFailed
 # from data.config import api_key
 # from data.models import Player, Clan
 
+def open_id(request, realm):
+    components = {
+        'scheme': request.scheme,
+        'host': request.get_host(),
+        'path': reverse('openid:callback')
+    }
+    return_to = '{scheme}://{host}{path}'.format(**components)
+    auth = Authentication(return_to=return_to)
+    url = auth.authenticate(f'https://{realm}.wargaming.net/id/openid/')
+    return redirect(url)
+
 def open_id_callback(request):
 
     # TO DO: get the region from the url
@@ -34,11 +45,8 @@ def open_id_callback(request):
         # get info about user
         match = re.search(regex, identities['identity'])
         realm = match.group(1)
-        status = request.GET.get('status', '')
-        access_token = request.GET.get('access_token', '')
-        expires_at = request.GET.get('expires_at', '')
-        account_id = request.GET.get('account_id', '')
-        nickname = request.GET.get('nickname', '')
+        account_id = match.group(2)
+        nickname = match.group(3)
 
         # log user in
         login_user(request, nickname, account_id, realm)       
@@ -47,15 +55,15 @@ def open_id_callback(request):
     except OpenIDVerificationFailed:
 
         # get information about error
-        status = request.GET.get('status', '')
-        code = request.GET.get('code', '')        
-        message = request.GET.get('message', '')    
+        # status = request.GET.get('status', '')
+        # code = request.GET.get('code', '')        
+        # message = request.GET.get('message', '')    
 
         # make sure user is logged out
         logout(request)
     
     # redirect back to frontend
-    return redirect(reverse('main:frontend'))
+    return redirect(reverse('frontend'))
 
 
 def login_user(request, nickname, wgid, realm):

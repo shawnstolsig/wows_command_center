@@ -32,21 +32,32 @@ export default function Login({ location }) {
   // a function for helping build the URL based on region
   const buildURL = (region) => {
 
-    // get the app id from .env (this isn't necessarily a secret)
-    const appID = process.env.REACT_APP_WOWS_APP_ID
+    // // get the app id from .env (this isn't necessarily a secret)
+    // const appID = process.env.REACT_APP_WOWS_APP_ID
 
-    // specify where WG should send the user back to
-    const redirectURL = `${process.env.REACT_APP_API_URL}openid`
+    // // specify where WG should send the user back to
+    // const redirectURL = `${process.env.REACT_APP_API_URL}openid`
+
+    // // get the domain based on the region
+    // let domain
+    // if (region === 'NA') domain = 'com';
+    // else if (region === 'EU') domain = 'eu';
+    // else if (region === 'RU') domain = 'ru';
+    // else if (region === 'ASIA') domain = 'asia';
+
+    // // return constructed URL
+    // return `https://api.worldoftanks.${domain}/wot/auth/login/?application_id=${appID}&redirect_uri=${encodeURIComponent(redirectURL)}`
 
     // get the domain based on the region
     let domain
-    if (region === 'NA') domain = 'com';
+    if (region === 'NA') domain = 'na';
     else if (region === 'EU') domain = 'eu';
     else if (region === 'RU') domain = 'ru';
     else if (region === 'ASIA') domain = 'asia';
 
     // return constructed URL
-    return `https://api.worldoftanks.${domain}/wot/auth/login/?application_id=${appID}&redirect_uri=${encodeURIComponent(redirectURL)}`
+    return `${process.env.REACT_APP_API_URL}openid/login/${domain}/`
+    
   }
 
   return (
