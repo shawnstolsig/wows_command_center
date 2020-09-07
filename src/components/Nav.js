@@ -50,7 +50,7 @@ function Nav({ dispatch, authedUser }) {
         </Typography>
 
         {authedUser
-          ? <Button color="inherit" onClick={handleLogout}>Logout</Button>
+          ? <Button color="inherit" onClick={handleLogout} href={`${process.env.REACT_APP_API_URL}openid/logout/`}>Logout</Button>
           : <Button color="inherit" component={RouterLink} to={'/login'}>Login</Button>
         }
 

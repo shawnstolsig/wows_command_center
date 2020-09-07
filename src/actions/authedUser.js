@@ -19,20 +19,11 @@ function actionLogoutUser() {
 export function handleLoginUser(allUserDetails) {
   return (dispatch) => {
 
-    // pull out only the user info we want to save
-    const { access_token, account_id, expires_at, nickname } = allUserDetails
-    const authedUser = {
-      accessToken: access_token,
-      accountID: account_id,
-      expiresAt: expires_at,
-      nickname,
-    }
-
     // set user in store
-    dispatch(actionLoginUser(authedUser))
+    dispatch(actionLoginUser(allUserDetails))
 
     // store user info in localstorage for auto login.  can't store object in localstorage so must stringify
-    localStorage.setItem('authedUser', JSON.stringify(authedUser))
+    localStorage.setItem('authedUser', JSON.stringify(allUserDetails))
 
   }
 }

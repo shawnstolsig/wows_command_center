@@ -14,7 +14,7 @@ function LoginCallback({ dispatch, location }) {
 
   // if user is not logged in and we got an access token back from WG, then login user to store
   React.useEffect(() => {
-    if (params.access_token) {
+    if (params.accountID) {
       dispatch(handleLoginUser(params))
     }
   }, [dispatch, params])
@@ -22,7 +22,7 @@ function LoginCallback({ dispatch, location }) {
   // redirect user to home page if successful, or back to login if unsuccessful
   return (
     <React.Fragment>
-      {params.access_token ? <Redirect to="/" /> : <Redirect to="/login?error=1" /> }
+      {params.accountID ? <Redirect to="/" /> : <Redirect to="/login?error=1" /> }
     </React.Fragment>
     
   )

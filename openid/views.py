@@ -19,11 +19,13 @@ from .exceptions import OpenIDVerificationFailed
 # from data.models import Player, Clan
 
 def open_id(request, realm):
+
     components = {
         'scheme': request.scheme,
         'host': request.get_host(),
         'path': reverse('openid:callback')
     }
+
     return_to = '{scheme}://{host}{path}'.format(**components)
     auth = Authentication(return_to=return_to)
     url = auth.authenticate(f'https://{realm}.wargaming.net/id/openid/')
@@ -49,21 +51,24 @@ def open_id_callback(request):
         nickname = match.group(3)
 
         # log user in
-        login_user(request, nickname, account_id, realm)       
+        login_user(request, nickname, account_id, realm)
+        query_strings = f'?nickname={nickname}&accountID={account_id}&realm={realm}'
 
     # if unsuccessful OpenID authentication
     except OpenIDVerificationFailed:
 
-        # get information about error
-        # status = request.GET.get('status', '')
-        # code = request.GET.get('code', '')        
-        # message = request.GET.get('message', '')    
-
         # make sure user is logged out
         logout(request)
-    
+
     # redirect back to frontend
-    return redirect(reverse('frontend'))
+    # return redirect(reverse('frontend'))                                             # for use with production, when Django is serving SPA frontend
+    return redirect(f'http://localhost:3000/complete_login{query_strings}')           # while developing with seperate frontend       
+
+
+def open_id_logout(request):
+    logout(request)
+    # return redirect(reverse('frontend'))                  # for use with production, when Django is serving SPA frontend
+    return redirect('http://localhost:3000/')               # while developing with seperate frontend
 
 
 def login_user(request, nickname, wgid, realm):
