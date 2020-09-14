@@ -9,3 +9,23 @@ export function testBackend(){
     url: `${BASE_URL}api/v1/`
   })
 }
+
+export function verifyToken(token){
+  return axios({
+    method: 'post',
+    url: `${BASE_URL}token/verify/`,
+    data: {
+      token,
+    }
+  })
+}
+
+export function getNewTokens(refresh){
+  return axios({
+    method: 'post',
+    url: `${BASE_URL}token/refresh/`,
+    data: {
+      refresh,
+    }
+  })
+}

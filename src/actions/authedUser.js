@@ -1,3 +1,7 @@
+// project imports
+import { verifyToken, getNewTokens } from '../util/api'
+
+// export action types
 export const LOGIN_USER = 'LOGIN_USER'
 export const LOGOUT_USER = 'LOGOUT_USER'
 
@@ -38,27 +42,44 @@ export function handleLogoutUser() {
 }
 
 export function handleAutoLogin() {
-  return (dispatch) => {
+  return async (dispatch) => {
 
     // check to see if authedUser info exists
     let authedUser = JSON.parse(localStorage.getItem('authedUser'))
+
     if (authedUser) {
-      // if so, check to see if it hasn't expired (or wont't within the buffer time)
-      const bufferTimeInMin = 30
-      if (authedUser.expiresAt - Date.now() / 1000 > bufferTimeInMin * 60) {
-        // refresh token?
-        // store authedUser info in state
+
+      // check to see if refresh token is valid
+      verifyToken(authedUser.refresh)
+      // if valid refresh token...
+      .then(() => {
+        
+        console.log(`Refresh token is valid`)
+
+        // ....obtain new token pair, with validated refresh token
+        return getNewTokens(authedUser.refresh)
+        
+      })
+      // if successfully got new access token...
+      .then((res) => {
+        console.log("Successfully obtained new access token: ", res.data)
+
+        // ...update authedUser with new access token
+        authedUser.access = res.data.access
+
+        // dispatch Login action with updated access token
         dispatch(actionLoginUser(authedUser))
         console.log("Autologin successful!")
-      }
-      // if it has expired, clear localstorage
-      else {
-        console.log("Autologin failed: User's token has expired.")
+      })
+      // if any issues with tokens....
+      .catch((err) => {
+        console.log(`Autologin failed: refresh token no longer valid.`)
+        // ....clear the previous authed user info from the browser
         localStorage.removeItem('authedUser')
-      }
+      })
     }
     else {
-      console.log("Autologin failed: No user info found in local storage.")
+      console.log("Autologin failed: no user info found in local storage.")
     }
   }
 }

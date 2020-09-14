@@ -1,6 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView
+)
 
 urlpatterns = [
     # admin page
@@ -11,7 +16,8 @@ urlpatterns = [
 
     # # backend: authorization
     path('openid/', include('openid.urls')),
-    # path('auth/', include('djoser.urls')),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     # path('auth/', include('djoser.urls.jwt')),
 
     # backend: api

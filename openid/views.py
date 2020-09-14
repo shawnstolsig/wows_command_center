@@ -8,6 +8,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import login, logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # OpenID auth modules
 from .authentication import Authentication
@@ -50,9 +51,14 @@ def open_id_callback(request):
         account_id = match.group(2)
         nickname = match.group(3)
 
-        # log user in
-        login_user(request, nickname, account_id, realm)
-        query_strings = f'?nickname={nickname}&accountID={account_id}&realm={realm}'
+        # log user in to Django session system
+        logged_in_user = login_user(request, nickname, account_id, realm)
+
+        # log user in by creating an access/refresh JWT pair for them
+        tokens = get_tokens_for_user(logged_in_user)
+
+        # format query strings that will be sent to frontend
+        query_strings = f'?nickname={nickname}&accountID={account_id}&realm={realm}&access={tokens["access"]}&refresh={tokens["refresh"]}'
 
     # if unsuccessful OpenID authentication
     except OpenIDVerificationFailed:
@@ -90,3 +96,11 @@ def login_user(request, nickname, wgid, realm):
     # login user with django's built-in auth system
     login(request, user)
     return user 
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
