@@ -47,12 +47,13 @@ def open_id_callback(request):
 
         # get info about user
         match = re.search(regex, identities['identity'])
-        realm = match.group(1)
+        realm = match.group(1)                      # use realm on frontend, ie: 'na', 'eu', 'ru', 'asia'
+        domain = convert_realm_to_domain(realm)     # put domain in backend, for WG API calls.  ie: 'com', 'eu', 'ru', 'asia'
         account_id = match.group(2)
         nickname = match.group(3)
 
         # log user in to Django session system
-        logged_in_user = login_user(request, nickname, account_id, realm)
+        logged_in_user = login_user(request, nickname, account_id, domain)
 
         # log user in by creating an access/refresh JWT pair for them
         tokens = get_tokens_for_user(logged_in_user)
@@ -77,7 +78,7 @@ def open_id_logout(request):
     return redirect('http://localhost:3000/')               # while developing with seperate frontend
 
 
-def login_user(request, nickname, wgid, realm):
+def login_user(request, nickname, wgid, domain):
     '''
     '   Helper function for loggin in (or creating) a user
     '''
@@ -90,7 +91,7 @@ def login_user(request, nickname, wgid, realm):
     except ObjectDoesNotExist:
         password = User.objects.make_random_password(length=255)
         user = User.objects.create_user(nickname, wgid, password)
-        user.last_name = realm                         # using the last_name field for the players realm
+        user.last_name = domain                         # using the last_name field for the players domain
         user.save()
 
     # login user with django's built-in auth system
@@ -104,3 +105,9 @@ def get_tokens_for_user(user):
         'refresh': str(refresh),
         'access': str(refresh.access_token),
     }
+
+def convert_realm_to_domain(realm):
+    if realm == 'na':
+        return 'com'
+    else:
+        return realm
