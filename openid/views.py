@@ -49,7 +49,7 @@ def open_id_callback(request):
         match = re.search(regex, identities['identity'])
         realm = match.group(1)                      # use realm on frontend, ie: 'na', 'eu', 'ru', 'asia'
         domain = convert_realm_to_domain(realm)     # put domain in backend, for WG API calls.  ie: 'com', 'eu', 'ru', 'asia'
-        account_id = match.group(2)
+        account_id = int(match.group(2))
         nickname = match.group(3)
 
         # log user in to Django session system
@@ -82,16 +82,18 @@ def login_user(request, nickname, wgid, domain):
     '''
     '   Helper function for loggin in (or creating) a user
     '''
+    print(f'in login_user, nickname is {nickname} wgid is {wgid} domain is {domain}')
 
     # try to find user from backend
     try:
-        user = User.objects.get(email__exact=wgid)      # using the email field for the WG player ID
+        user = User.objects.get(id=wgid) 
 
     # if unable to get the user, create a new one
     except ObjectDoesNotExist:
+
         password = User.objects.make_random_password(length=255)
-        user = User.objects.create_user(nickname, wgid, password)
-        user.last_name = domain                         # using the last_name field for the players domain
+        user = User.objects.create_user(nickname, id=wgid, password=password)
+        user.last_name = domain                                     # using the last_name field for the players domain
         user.save()
 
     # login user with django's built-in auth system

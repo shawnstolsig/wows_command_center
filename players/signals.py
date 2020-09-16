@@ -14,12 +14,12 @@ def create_user_player(sender, instance, created, **kwargs):
     if created:
 
         # get the User's info, email = wgid and last_name = domain
-        wg_player_id = instance.email
+        wg_player_id = instance.id
         player_domain = instance.last_name
 
         # get Player from db if already exists, or create a new one for this User
         player, new_player = Player.objects.get_or_create(id=wg_player_id)
-        player.user = instance
+        player.user = instance   ## ERROR HERE??
 
         # get info from WG API about player's clan
         wg_clan_details = get_clan_info(wg_player_id, player_domain)
