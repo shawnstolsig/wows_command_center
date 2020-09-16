@@ -9,9 +9,7 @@ from . import views
 # urlpatterns = router.urls
 
 # for testing/setup:
-from django.urls import path, include
+from django.urls import path
 urlpatterns = [
-    path('test/', views.test_json),
-    path('players/', include('players.urls')),
-    path('clans/', include('clans.urls')),
+    
 ]

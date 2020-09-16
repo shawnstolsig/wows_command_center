@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     # Custom apps
     'api.apps.ApiConfig',
     'openid.apps.OpenIDConfig',
+    'players.apps.PlayersConfig',
+    'clans.apps.ClansConfig',
 ]
 
 MIDDLEWARE = [
