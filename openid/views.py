@@ -92,9 +92,7 @@ def login_user(request, nickname, wgid, domain):
     except ObjectDoesNotExist:
 
         password = User.objects.make_random_password(length=255)
-        user = User.objects.create_user(nickname, id=wgid, password=password)
-        user.last_name = domain                                     # using the last_name field for the players domain
-        user.save()
+        user = User.objects.create_user(nickname, id=wgid, password=password, last_name=domain)
 
     # login user with django's built-in auth system
     login(request, user)

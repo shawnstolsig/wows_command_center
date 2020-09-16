@@ -1,7 +1,6 @@
 import os
 import requests
 
-
 def get_clan_info(wg_player_id, domain):
         
     # get set WG_APP_ID from environment variables
@@ -12,7 +11,7 @@ def get_clan_info(wg_player_id, domain):
     response = requests.get(url)
 
     # if invalid response from WG, abort
-    if response.status_code != '200':
+    if response.status_code != 200:
         return None
     
     # convert response to JSON
@@ -25,14 +24,14 @@ def get_clan_info(wg_player_id, domain):
         return None
     
     # if player was found, get clan ID
-    clan_id = player_json['data'][wg_player_id]['clan_id']
+    clan_id = player_json['data'][str(wg_player_id)]['clan_id']
 
     # get clan info 
     url = f'https://api.worldofwarships.{domain}/wows/clans/info/?application_id={WG_APP_ID}&clan_id={clan_id}'
     response = requests.get(url)
 
     # if invalid response from WG, abort
-    if response.status_code != '200':
+    if response.status_code != 200:
         return None
 
     # convert response to JSON
@@ -44,4 +43,4 @@ def get_clan_info(wg_player_id, domain):
     elif clan_json['meta']['count'] != 1:
         return None
 
-    return clan_json['data'][clan_id]
+    return clan_json['data'][str(clan_id)]
