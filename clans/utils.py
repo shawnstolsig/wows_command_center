@@ -1,8 +1,35 @@
 import os
 import requests
 
-from players.utils import get_player_info
+from players.utils import get_player_info, create_or_update_player_entry
 from .models import Clan
+
+def refresh_clan_on_login(clan_id, domain):
+    """
+    "   Upon user login, this function refreshes all of the clan data for that user's clan.
+    """
+
+    # get clan info
+    clan_info = get_clan_info(clan_id, domain)
+
+    # if successfully retrieved clan info from WG API:
+    if clan_info:
+
+        # update the clan info on backend
+        clan = create_or_update_clan_entry(clan_info)
+
+        # iterate through all players in clan
+        for player_id in clan_info['members_ids']:
+
+            # get that player's info from WG API
+            player_info = get_player_info(player_id, domain)
+            
+            # if successful...
+            if player_info:
+                # ...post to db
+                player = create_or_update_player_entry(player_info)
+                player.clan = clan
+                player.save()
 
 def get_clan_info(clan_id, domain):
     """
@@ -28,7 +55,7 @@ def get_clan_info(clan_id, domain):
     elif clan_json['meta']['count'] != 1:
         return None
 
-    # return the detailed clan info.  
+    # return the detailed clan info.  keys: name, tag, clan_id, members_count, description, members_ids
     return clan_json['data'][str(clan_id)]
 
 def create_or_update_clan_entry(clan_info):
@@ -41,6 +68,8 @@ def create_or_update_clan_entry(clan_info):
     # update clan's name/tag regardless if Clan already existed in db
     clan.name = clan_info['name']
     clan.tag = clan_info['tag']
+    clan.description = clan_info['description']
+    clan.members_count = clan_info['members_count']
     clan.save()
 
     return clan

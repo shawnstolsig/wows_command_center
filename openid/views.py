@@ -13,7 +13,7 @@ from .authentication import Authentication
 from .verification import Verification
 from .exceptions import OpenIDVerificationFailed
 
-# from clans.utils import update_user_clan_info
+from clans.utils import refresh_clan_on_login
 
 
 def open_id(request, realm):
@@ -99,7 +99,7 @@ def login_user(request, nickname, wgid, domain):
         user = User.objects.get(id=wgid) 
 
         # update the User's clan information
-        # PICKUP HERE
+        refresh_clan_on_login(user.player.clan.id, domain)
 
 
     # if unable to get the user, create a new one
