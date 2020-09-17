@@ -13,6 +13,9 @@ from .authentication import Authentication
 from .verification import Verification
 from .exceptions import OpenIDVerificationFailed
 
+# from clans.utils import update_user_clan_info
+
+
 def open_id(request, realm):
     """
     "   This is the first step of the OpenID 2.0 authentication workflow.  It correctly configures
@@ -95,7 +98,9 @@ def login_user(request, nickname, wgid, domain):
     try:
         user = User.objects.get(id=wgid) 
 
-        # PICKUP HERE: logic for updating clan info each time user logs in?
+        # update the User's clan information
+        # PICKUP HERE
+
 
     # if unable to get the user, create a new one
     except ObjectDoesNotExist:
