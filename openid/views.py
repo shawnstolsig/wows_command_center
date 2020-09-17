@@ -1,6 +1,4 @@
 import re
-# import requests
-# import json
 
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView
@@ -15,11 +13,11 @@ from .authentication import Authentication
 from .verification import Verification
 from .exceptions import OpenIDVerificationFailed
 
-# Project imports
-# from data.config import api_key
-# from data.models import Player, Clan
-
 def open_id(request, realm):
+    """
+    "   This is the first step of the OpenID 2.0 authentication workflow.  It correctly configures
+    "   a URL for WG to redirect to after the user logs in on WG's servers.
+    """
 
     components = {
         'scheme': request.scheme,
@@ -33,6 +31,12 @@ def open_id(request, realm):
     return redirect(url)
 
 def open_id_callback(request):
+    """
+    "   This is the second step of the OpenID 2.0 authentication workflow.  It verifies the 
+    "   callback URL and parameters from WG, and if the OpenID authentication is valid,
+    "   it logs the user into the Django backend and also creates a JWT pair for frontend
+    "   integration.
+    """
 
     # TO DO: get the region from the url
     regex = r'https://(\w+).wargaming.net/id/([0-9]+)-(\w+)/'
@@ -47,15 +51,15 @@ def open_id_callback(request):
 
         # get info about user
         match = re.search(regex, identities['identity'])
-        realm = match.group(1)                      # use realm on frontend, ie: 'na', 'eu', 'ru', 'asia'
-        domain = convert_realm_to_domain(realm)     # put domain in backend, for WG API calls.  ie: 'com', 'eu', 'ru', 'asia'
+        realm = match.group(1)                              # use realm on frontend, ie: 'na', 'eu', 'ru', 'asia'
+        domain = convert_realm_to_domain(realm)             # put domain in backend, for WG API calls.  ie: 'com', 'eu', 'ru', 'asia'
         account_id = int(match.group(2))
         nickname = match.group(3)
 
         # log user in to Django session system
         logged_in_user = login_user(request, nickname, account_id, domain)
 
-        # log user in by creating an access/refresh JWT pair for them
+        # log user in by creating an access/refresh JWT pair for use by frontend
         tokens = get_tokens_for_user(logged_in_user)
 
         # format query strings that will be sent to frontend
@@ -73,6 +77,10 @@ def open_id_callback(request):
 
 
 def open_id_logout(request):
+    """
+    "   Logs user out of Django's session system.
+    """
+
     logout(request)
     # return redirect(reverse('frontend'))                  # for use with production, when Django is serving SPA frontend
     return redirect('http://localhost:3000/')               # while developing with seperate frontend
@@ -82,11 +90,12 @@ def login_user(request, nickname, wgid, domain):
     '''
     '   Helper function for loggin in (or creating) a user
     '''
-    print(f'in login_user, nickname is {nickname} wgid is {wgid} domain is {domain}')
 
     # try to find user from backend
     try:
         user = User.objects.get(id=wgid) 
+
+        # PICKUP HERE: logic for updating clan info each time user logs in?
 
     # if unable to get the user, create a new one
     except ObjectDoesNotExist:
@@ -99,6 +108,9 @@ def login_user(request, nickname, wgid, domain):
     return user 
 
 def get_tokens_for_user(user):
+    """
+    "   Creates a JSON Web Token pair for the user.  Used by frontend during autologin.
+    """
     refresh = RefreshToken.for_user(user)
 
     return {
@@ -107,6 +119,9 @@ def get_tokens_for_user(user):
     }
 
 def convert_realm_to_domain(realm):
+    """
+    "   Corrects the 'na' realm so that a useable domain is stored for WG API use ('na' = 'com')
+    """
     if realm == 'na':
         return 'com'
     else:

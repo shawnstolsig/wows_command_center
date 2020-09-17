@@ -24,8 +24,6 @@ def create_user_player(sender, instance, created, **kwargs):
         # get info from WG API about player's clan
         wg_clan_details = get_clan_info(wg_player_id, player_domain)
 
-        print(f'wg_clan_details: {wg_clan_details}')
-
         # if player's clan details successfully retrieved
         if wg_clan_details:
             
@@ -37,22 +35,10 @@ def create_user_player(sender, instance, created, **kwargs):
             clan.tag = wg_clan_details['tag']
             clan.save()
             player.clan = clan
-
-            if new_clan:
-                print(f'New player created, {clan}')
-            else:
-                print(f'No new player created, {clan}')
         
         # save changes to Player
         player.save()
         instance.save()
-
-        if new_player:
-            print(f'New player created, {player}')
-        else:
-            print(f'No new player created, {player}')
-
-
 
 @receiver(post_save, sender=User)
 def save_user_player(sender, instance, **kwargs):

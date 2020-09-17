@@ -2,6 +2,12 @@ import os
 import requests
 
 def get_clan_info(wg_player_id, domain):
+    """
+    "   Gets detailed clan information whenever a User is created by querying the WG API.
+    "   First, gets the player's clan, then gets that clan's detailed information.  
+    "   Return None if unable to reach the WG API or if there are any other issues identifying
+    "   the User's clan.
+    """
         
     # get set WG_APP_ID from environment variables
     WG_APP_ID = os.getenv("WG_APP_ID")
@@ -43,4 +49,5 @@ def get_clan_info(wg_player_id, domain):
     elif clan_json['meta']['count'] != 1:
         return None
 
+    # return the detailed clan info.  keys: name, tag, members_count, members_ids, description, leader_name
     return clan_json['data'][str(clan_id)]
