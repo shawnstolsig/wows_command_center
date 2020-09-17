@@ -29,7 +29,7 @@ def get_clan_info(clan_id, domain):
         return None
 
     # return the detailed clan info.  
-    return clan_json['data'][clan_id]
+    return clan_json['data'][str(clan_id)]
 
 def create_or_update_clan_entry(clan_info):
     '''

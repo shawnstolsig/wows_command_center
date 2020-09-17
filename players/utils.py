@@ -1,5 +1,7 @@
 import os
 import requests
+from datetime import datetime
+from django.utils.timezone import make_aware
 
 from .models import Player
 
@@ -34,13 +36,18 @@ def create_or_update_player_entry(player_info):
     '''
     '   Takes in detailed clan info from WG's API and either creates or updates the Clan in the db
     '''
+
+    # create a timezone aware datetime object out for joined_clan_at
+    join_date = datetime.fromtimestamp(player_info['joined_at'])
+    aware_date = make_aware(join_date)
+
     # get Clan from db if already exists, or create a new one for this User
     player, new_player = Player.objects.get_or_create(id=player_info['account_id'])
 
     # update clan's name/tag regardless if Clan already existed in db
     player.name = player_info['account_name']
     player.role = player_info['role']
-    player.joined_at = player_info['joined_at']
+    player.joined_clan_at = aware_date
     player.save()
 
     return player
